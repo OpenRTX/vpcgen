@@ -180,11 +180,11 @@ band,,,Band
 VHF,,,V H F
 UHF,,,U H F
 LCDType,,,L C D Type
-Niccolo,,,Niccolo' I U 2 K I N
-Silvano,,,Silvano I U 2 K W O
-Federico,,,Federico I U 2 N U O
-Fred,,,Fred I U 2 N R O
-Joseph,,,Joseph V K 7 J S
+Niccolo,,,Niccolo: I U 2 K I N.
+Silvano,,,Silvano: I U 2 K W O.
+Federico,,,Federico: I U 2 N U O.
+Fred,,,Fred: I U 2 N R O.
+Joseph,,,Joseph: V K 7 J S.
 allChannels,,,All channels
 menu,,,Menu
 gpsOff,,,GPS Off
@@ -209,3 +209,4 @@ forEmergencyUse,,,For emergency use
 pressAnyButton,,,press any button.
 accessibility,,,Accessibility
 usedHeap,,,Used heap
+broadcast,,,broadcast
