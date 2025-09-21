@@ -209,4 +209,9 @@ forEmergencyUse,,,For emergency use
 pressAnyButton,,,press any button.
 accessibility,,,Accessibility
 usedHeap,,,Used heap
-broadcast,,,broadcast
+broadcast,,,ALL
+radioSettings,,,Radio Settings
+frequencyOffset,,,Frequency Offset
+macroLatching,,,Macro Latch
+noGps,,,No GPS
+batteryIcon,,,Battery Icon
