@@ -1,5 +1,5 @@
 PromptName,PromptSpeechPrefix,PromptSpeechPostfix,PromptText
-PROMPT_SILENCE,,, 
+PROMPT_SILENCE,,,
 PROMPT_0,,,0
 PROMPT_1,,,1
 PROMPT_2,,,2
@@ -62,7 +62,7 @@ PROMPT_W_PHONETIC,,,whisky
 PROMPT_X_PHONETIC,,,exray
 PROMPT_Y_PHONETIC,,,yankie
 PROMPT_Z_PHONETIC,,,zulu
-PROMPT_CAP,,,cap 
+PROMPT_CAP,,,cap
 PROMPT_HERTZ,,,hertz
 PROMPT_KILOHERTZ,,,Kilohertz
 PROMPT_MEGAHERTZ,,,Megahertz
@@ -142,7 +142,7 @@ PROMPT_CUSTOM6,,,repeater
 PROMPT_CUSTOM7,,,BlindHams
 PROMPT_CUSTOM8,,,Allstar
 PROMPT_CUSTOM9,,,Parrot
-PROMPT_CUSTOM10,,, 
+PROMPT_CUSTOM10,,,
 LANGUAGE_NAME,,,English
 off,,,Off
 on,,,On
@@ -192,7 +192,7 @@ noFix,,,No fix
 fixLost,,,Fix lost
 error,,,Error
 flashBackup,,,Flash backup
-connectToRTXTool,,,Connect to R T X Tool 
+connectToRTXTool,,,Connect to R T X Tool
 toBackupFlashAnd,,,to backup Flash and
 pressPTTToStart,,,press PTT to start.
 flashRestore,,,Flash restore
