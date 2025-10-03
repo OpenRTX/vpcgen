@@ -211,7 +211,16 @@ accessibility,,,Accessibility
 usedHeap,,,Used heap
 broadcast,,,ALL
 radioSettings,,,Radio Settings
-frequencyOffset,,,Frequency Offset
+frequencyOffset,,,Offset
 macroLatching,,,Macro Latch
 noGps,,,No GPS
 batteryIcon,,,Battery Icon
+CTCSSTone,,,C T C S S Tone
+CTCSSEn,,,C T C S S Enable
+Encode,,,Encode
+Decode,,,Decode
+Both,,,Both
+None,,,None
+direction,,,Direction
+step,,,Step
+radio,,,Radio
