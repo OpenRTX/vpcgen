@@ -2,3 +2,4 @@
 *.raw
 *.bin
 *.ogg
+languages/**/*.mp3
