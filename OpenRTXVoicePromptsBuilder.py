@@ -21,7 +21,6 @@ removeSilenceAtStart = False
 # PollyPro is not working
 forceTTSMP3Usage = True
 
-#FLASH_WRITE_SIZE = 2
 
 
 def convertToRaw(inFile,outFile):
@@ -200,10 +199,10 @@ def buildDataPack(filename,voiceName,outputFileName):
     print("Built voice pack "+outputFileName)
 
 
-PROGRAM_VERSION = "0.0.2"
+PROGRAM_VERSION = "0.0.3"
 
 def usage(message=""):
-    print("GD-77 voice prompts creator. v" + PROGRAM_VERSION)
+    print("OpenRTX voice prompts creator. v" + PROGRAM_VERSION)
     if (message != ""):
         print()
         print(message)
@@ -213,13 +212,11 @@ def usage(message=""):
     print("")
     print("    -h Display this help text,")
     print("    -c Configuration file (csv) - using this overrides all other options")
-    print("    -f=<wordlist_csv_file> : Wordlist file. Required for all functions")
+    print("    -f=<wordlist_csv_file> : Wordlist file. Required for most functions")
     ##print("    -n=<Voice_name>       : Voice name for synthesised speech from Voicepolly.pro and temporary folder name")
     ##print("    -s                    : Download synthesised speech from Voicepolly.pro")
     print("    -T                    : Download synthesised speech from ttsmp3.com")
-    print("    -e                    : Encode previous download synthesised speech files, using the GD-77")
     print("    -b                    : Build voice prompts data pack from Encoded spech files ")
-    print("    -d=<device>           : Use the specified device as serial port,")
     print("    -o                    : Overwrite existing files")
     print("    -g=gain               : Audio level gain adjust in db.  Default is 0, but can be negative or positive numbers")
     print("    -t=tempo              : Audio tempo (from 0.5 to 2).  Default is {}".format(atempo))
@@ -266,8 +263,6 @@ def main():
             fileName = arg
         #elif opt in ("-n"):
         #    voiceName = arg
-        elif opt in ("-d"):
-            serialDev = arg
         elif opt in ("-c"):
             configName = arg
         elif opt in ("-o"):
