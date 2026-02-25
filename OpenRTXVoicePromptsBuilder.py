@@ -3,18 +3,11 @@
 import urllib.request
 import json
 import csv
-import os, sys
-import time
 import os
 import subprocess
-import struct
-import serial
-import platform
 import getopt, sys
-import serial.tools.list_ports
 import ntpath
 import shutil
-import webbrowser
 import re
 
 
