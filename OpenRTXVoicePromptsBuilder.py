@@ -30,122 +30,6 @@ forceTTSMP3Usage = True
 
 #FLASH_WRITE_SIZE = 2
 
-def serialInit(serialDev):
-    ser = serial.Serial()
-    ser.port = serialDev
-    ser.baudrate = 115200
-    ser.bytesize = serial.EIGHTBITS
-    ser.parity = serial.PARITY_NONE
-    ser.stopbits = serial.STOPBITS_ONE
-    ser.timeout = 1000.0
-    #ser.xonxoff = 0
-    #ser.rtscts = 0
-    ser.write_timeout = 1000.0
-    try:
-        ser.open()
-    except serial.SerialException as err:
-        print(str(err))
-        sys.exit(1)
-    return ser
-
-def getMemoryArea(ser,buf,mode,bufStart,radioStart,length):
-    R_SIZE = 8
-    snd = bytearray(R_SIZE)
-    snd[0] = ord('R')
-    snd[1] = mode
-    bufPos = bufStart
-    radioPos = radioStart
-    remaining = length
-    while (remaining > 0):
-        batch = min(remaining,MAX_TRANSFER_SIZE)
-        snd[2] = (radioPos >> 24) & 0xFF
-        snd[3] = (radioPos >> 16) & 0xFF
-        snd[4] = (radioPos >>  8) & 0xFF
-        snd[5] = (radioPos >>  0) & 0xFF
-        snd[6] = (batch >> 8) & 0xFF
-        snd[7] = (batch >> 0) & 0xFF
-        ret = ser.write(snd)
-
-        if (ret != R_SIZE):
-            print("ERROR: write() wrote " + str(ret) + " bytes")
-            return False
-        while (ser.in_waiting == 0):
-            time.sleep(0)
-
-        rcv = ser.read(ser.in_waiting)
-        if (rcv[0] == snd[0]):
-            gotBytes = (rcv[1] << 8) + rcv[2]
-            for i in range(0,gotBytes):
-                buf[bufPos] = rcv[i+3]
-                bufPos += 1
-            radioPos += gotBytes
-            remaining -= gotBytes
-        else:
-            print("read stopped (error at " + str(rcv) + ")")
-            return False
-    return True
-
-def sendCommand(ser,commandNumber, x_or_command_option_number, y, iSize, alignment, isInverted, message):
-    # snd allocation? len 64 or 32? or 23?
-    snd = bytearray(7+16)
-    snd[0] = ord('C')
-    snd[1] = commandNumber
-    snd[2] = x_or_command_option_number
-    snd[3] = y
-    snd[4] = iSize
-    snd[5] = alignment
-    snd[6] = isInverted
-    # copy message to snd[7] (max 16 bytes)
-    i = 7
-    for c in message:
-        if (i > 7+16-1):
-            break
-        snd[i] = ord(c)
-        i += 1
-    ser.flush()
-    ret = ser.write(snd)
-    if (ret != 7+16): # length?
-        print("ERROR: write() wrote " + str(ret) + " bytes")
-        return False
-    while (ser.in_waiting == 0):
-        time.sleep(0)
-    rcv = ser.read(ser.in_waiting)
-    return len(rcv) > 2 and rcv[1] == snd[1]
-
-
-def wavSendData(ser,buf,radioStart,length):
-    FLASH_SEND_SIZE = 8
-    snd = bytearray(FLASH_SEND_SIZE+MAX_TRANSFER_SIZE)
-    snd[0] = ord('W')
-    snd[1] = 7#data type 7
-    bufPos = 0
-    radioPos = radioStart
-    remaining = length
-    while (remaining > 0):
-        transferSize = min(remaining,MAX_TRANSFER_SIZE)
-
-        snd[2] = (radioPos >> 24) & 0xFF
-        snd[3] = (radioPos >> 16) & 0xFF
-        snd[4] = (radioPos >>  8) & 0xFF
-        snd[5] = (radioPos >>  0) & 0xFF
-        snd[6] = (transferSize >>  8) & 0xFF
-        snd[7] = (transferSize >>  0) & 0xFF
-        snd[FLASH_SEND_SIZE:FLASH_SEND_SIZE+transferSize] = buf[bufPos:bufPos+transferSize]
-
-        ret = ser.write(snd)
-        if (ret != FLASH_SEND_SIZE+MAX_TRANSFER_SIZE):
-            print("ERROR: write() wrote " + str(ret) + " bytes")
-            return False
-        while (ser.in_waiting == 0):
-            time.sleep(0)
-        rcv = ser.read(ser.in_waiting)
-        if not (rcv[0] == snd[0] and rcv[1] == snd[1]):
-            print("ERROR: at "+str(radioPos))
-        bufPos += transferSize
-        radioPos += transferSize
-        remaining -= transferSize
-    return True
-
 
 def convertToRaw(inFile,outFile):
     print("ConvertToRaw "+ inFile + " -> " + outFile + " gain="+gain + " tempo="+atempo)
@@ -203,6 +87,7 @@ def downloadPollyPro(voiceName,fileStub,promptText,speechSpeed):
     if (not os.path.exists(Codec2Filename)):
         convertToCodec2(rawFileName, Codec2Filename)
     return retval
+
 
 def downloadTTSMP3(voiceName,fileStub,promptText):
     myobj = {'msg': promptText,
@@ -347,6 +232,7 @@ def usage(message=""):
     print("    -t=tempo              : Audio tempo (from 0.5 to 2).  Default is {}".format(atempo))
     print("    -r                    : Remove silence from beginning of audio files")
     print("")
+
 
 def main():
     global overwrite
