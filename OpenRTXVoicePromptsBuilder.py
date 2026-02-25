@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
-import urllib.request
-import json
 import csv
-import os
-import subprocess
-import getopt, sys
+import getopt
+import json
 import ntpath
-import shutil
+import os
 import re
-
+import shutil
+import subprocess
+import sys
+import urllib.request
 
 MAX_TRANSFER_SIZE = 32
 CREATE_NO_WINDOW = 0x08000000
@@ -57,7 +57,7 @@ def downloadPollyPro(voiceName,fileStub,promptText,speechSpeed):
     mp3FileName = voiceName + "/" +fileStub+".mp3"
     rawFileName = voiceName + "/" +fileStub+".raw"
     Codec2Filename = voiceName + "/" +fileStub+".c2"
-    if (not os.path.exists(mp3FileName) or overwrite==True):
+    if (not os.path.exists(mp3FileName) or overwrite):
         with urllib.request.urlopen("https://voicepolly.pro/speech-converter.php", data) as f:
             resp = f.read().decode('utf-8')
             print("PollyPro: Downloading synthesised speech for text: \"" + promptText + "\" -> " + mp3FileName)
@@ -73,7 +73,7 @@ def downloadPollyPro(voiceName,fileStub,promptText,speechSpeed):
 #    else:
 #        print("Download skipping " + file_name)
 
-    if (hasDownloaded == True or not os.path.exists(rawFileName) or overwrite == True):
+    if (hasDownloaded or not os.path.exists(rawFileName) or overwrite):
         convertToRaw(mp3FileName,rawFileName)
         if (os.path.exists(Codec2Filename)):
             os.remove(Codec2Filename)# Codec2 file is now out of date, so delete it
@@ -97,7 +97,7 @@ def downloadTTSMP3(voiceName,fileStub,promptText):
     Codec2Filename = voiceName + "/" +fileStub+".c2"
     hasDownloaded = False
 
-    if (not os.path.exists(mp3FileName) or overwrite==True):
+    if (not os.path.exists(mp3FileName) or overwrite):
         print("Download TTSMP3 " +  promptText)
         with urllib.request.urlopen("https://ttsmp3.com/makemp3_new.php", data) as f:
             resp = f.read().decode('utf-8')
@@ -118,7 +118,7 @@ def downloadTTSMP3(voiceName,fileStub,promptText):
                 print("Error requesting sound")
                 return False
 
-    if (hasDownloaded == True or not os.path.exists(rawFileName) or overwrite == True):
+    if (hasDownloaded or not os.path.exists(rawFileName) or overwrite):
         convertToRaw(mp3FileName,rawFileName)
         if (os.path.exists(Codec2Filename)):
             os.remove(Codec2Filename)# codec2 file is now out of date, so delete it
@@ -139,7 +139,7 @@ def downloadSpeechForWordList(filename,voiceName):
             speechPrefix = row['PromptSpeechPrefix'].strip()
 
             ## PollyPro is not working.
-            if ((forceTTSMP3Usage == False) and (speechPrefix != "") and False):
+            if (not forceTTSMP3Usage) and (speechPrefix != "") and False:
                 #Use VoicePolly as its not a special SSML that it doesnt handle
                 if (speechPrefix.find("<prosody rate=")!=-1):
                     matchObj = re.search(r'\".*\"',speechPrefix)
@@ -150,11 +150,11 @@ def downloadSpeechForWordList(filename,voiceName):
             else:
                 promptTTSText = row['PromptSpeechPrefix'].strip() +  row['PromptText'] + row['PromptSpeechPostfix'].strip()
 
-                if (downloadTTSMP3(voiceName,promptName,promptTTSText)==False):
+                if not downloadTTSMP3(voiceName, promptName, promptTTSText):
                     retval=False
                     break
         # Add voice name as last prompt
-        if (downloadTTSMP3(voiceName, "PROMPT_VOICE_NAME", voiceName)==False):
+        if not downloadTTSMP3(voiceName, "PROMPT_VOICE_NAME", voiceName):
             retval=False
         return retval
 
@@ -182,10 +182,10 @@ def buildDataPack(filename,voiceName,outputFileName):
     outBuf[0:3]  = bytes([0x56, 0x50, 0x00, 0x00])#Magic number
     outBuf[4:7]  = bytes([0x00, 0x10, 0x00, 0x00])#Version number
     outBuf[8:11] = bytes([0x00, 0x00, 0x00, 0x00])#First prompt audio is at offset zero
-    bufPos=12;
-    cumulativelength=0;
+    bufPos=12
+    cumulativelength=0
     for prompt in promptsDict:
-        cumulativelength = cumulativelength + len(promptsDict[prompt]);
+        cumulativelength = cumulativelength + len(promptsDict[prompt])
         outBuf[bufPos+3] = (cumulativelength >> 24) & 0xFF
         outBuf[bufPos+2] = (cumulativelength >> 16) & 0xFF
         outBuf[bufPos+1] = (cumulativelength >>  8) & 0xFF
@@ -197,7 +197,7 @@ def buildDataPack(filename,voiceName,outputFileName):
         for prompt in promptsDict:
             f.write(promptsDict[prompt])
     f.close()
-    print("Built voice pack "+outputFileName);
+    print("Built voice pack "+outputFileName)
 
 
 PROGRAM_VERSION = "0.0.2"
@@ -291,7 +291,6 @@ def main():
                 voiceName = row['Voice_name'].strip()
                 voicePackName = row['Voice_pack_name'].strip()
                 download = row['Download'].strip()
-                encode = row['Encode'].strip()
                 createPack = row['Createpack'].strip()
                 gain = row['Volume_change_db'].strip()
                 rs = row['Remove_silence'].strip()
@@ -302,13 +301,13 @@ def main():
                     atempo = cfg_atempo
 
                 ## Add audio tempo value to the filename
-                voicePackName = voicePackName.replace('.vpc', '-' + atempo + '.vpc');
+                voicePackName = voicePackName.replace('.vpc', '-' + atempo + '.vpc')
 
                 print("Processing " + wordlistFilename+" "+voiceName+" "+voicePackName)
 
                 if not os.path.exists(voiceName):
                     print("Creating folder " + voiceName + " for temporary files")
-                    os.mkdir(voiceName);
+                    os.mkdir(voiceName)
 
                 if (rs=='y' or rs=='Y'):
                     removeSilenceAtStart = True
@@ -316,7 +315,7 @@ def main():
                     removeSilenceAtStart = False
 
                 if (download=='y' or download=='Y'):
-                    if (downloadSpeechForWordList(wordlistFilename,voiceName)==False):
+                    if not downloadSpeechForWordList(wordlistFilename, voiceName):
                      sys.exit(2)
 
                         # call buildDataPack
@@ -332,7 +331,7 @@ def main():
 
     if not os.path.exists(voiceName):
         print("Creating folder " + voiceName + " for temporary files")
-        os.mkdir(voiceName);
+        os.mkdir(voiceName)
 
     #for opt, arg in opts:
     #    if opt in ("-s"):
