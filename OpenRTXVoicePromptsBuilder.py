@@ -36,7 +36,7 @@ def convertToCodec2(inFile,outFile):
     print("ConvertToCodec2 "+ inFile + " -> " + outFile)
     callArgs = ['c2enc','3200',inFile,outFile]
     if os.name == 'nt':
-        subprocess.call(callArgs, creationflags=CREATE_NO_WINDOW)
+        subprocess.call(callArgs, creationflags=CREATE_NO_WINDOW, shell=True)
     elif os.name == 'posix':
         subprocess.call(callArgs)
 
@@ -91,9 +91,9 @@ def downloadTTSMP3(voiceName,fileStub,promptText):
     data = myStr.encode('ascii')
 
 
-    mp3FileName = voiceName + "/" +fileStub+".mp3"
-    rawFileName = voiceName + "/" +fileStub+".raw"
-    Codec2Filename = voiceName + "/" +fileStub+".c2"
+    mp3FileName = voiceName + "/" + fileStub + ".mp3"
+    rawFileName = voiceName + "/" + fileStub + "_" + atempo + ".raw"
+    Codec2Filename = voiceName + "/" + fileStub + "_" + atempo + ".c2"
     hasDownloaded = False
 
     if (not os.path.exists(mp3FileName) or overwrite):
@@ -129,6 +129,10 @@ def downloadTTSMP3(voiceName,fileStub,promptText):
 def downloadSpeechForWordList(filename,voiceName):
     retval = True
     speechSpeed="normal"
+
+    opener = urllib.request.build_opener()
+    opener.addheaders = [('User-Agent', 'VoicePromptsBuilder for OpenRTX')]
+    urllib.request.install_opener(opener)
 
     with open(filename,"r",encoding='utf-8') as csvfile:
         reader = csv.DictReader(filter(lambda row: row[0]!='#', csvfile))
