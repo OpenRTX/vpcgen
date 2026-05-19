@@ -210,7 +210,7 @@ def buildDataPack(filename,voiceName,outputFileName):
     print("Built voice pack "+outputFileName)
 
 
-PROGRAM_VERSION = "0.0.3"
+PROGRAM_VERSION = "0.1.0"
 
 def usage(message=""):
     print("OpenRTX voice prompts creator. v" + PROGRAM_VERSION)
