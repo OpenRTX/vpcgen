@@ -178,14 +178,21 @@ def buildDataPack(filename,voiceName,outputFileName):
         with open(infile,'rb') as f:
             promptsDict[promptName] = bytearray(f.read())
             f.close()
-                
+
+    wordlistamount = sum(1 for key in promptsDict if not key.startswith('PROMPT_'))
     MAX_PROMPTS = 350
-    headerTOCSize = (MAX_PROMPTS * 4) + 4 + 4
+    headerTOCSize = (MAX_PROMPTS * 4) + 4 + 4 + 4
     outBuf = bytearray(headerTOCSize)
     outBuf[0:3]  = bytes([0x56, 0x50, 0x00, 0x00])#Magic number
     outBuf[4:7]  = bytes([0x00, 0x10, 0x00, 0x00])#Version number
-    outBuf[8:11] = bytes([0x00, 0x00, 0x00, 0x00])#First prompt audio is at offset zero
-    bufPos=12
+    outBuf[8:12] = bytes([
+        (wordlistamount >> 24) & 0xFF,
+        (wordlistamount >> 16) & 0xFF,
+        (wordlistamount >> 8) & 0xFF,
+        (wordlistamount >> 0) & 0xFF,
+    ])#Amount of voice lines without the prompts
+    outBuf[12:15] = bytes([0x00, 0x00, 0x00, 0x00])#First prompt audio is at offset zero
+    bufPos=16
     cumulativelength=0
     for prompt in promptsDict:
         cumulativelength = cumulativelength + len(promptsDict[prompt])
