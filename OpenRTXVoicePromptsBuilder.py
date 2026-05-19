@@ -169,12 +169,12 @@ def buildDataPack(filename,voiceName,outputFileName):
         reader = csv.DictReader(filter(lambda row: row[0]!='#', csvfile))
         for row in reader:
             promptName = row['PromptName'].strip()
-            infile = voiceName+"/" + promptName+".c2"
+            infile = voiceName + "/" + promptName + "_" + atempo + ".c2"
             with open(infile,'rb') as f:
                 promptsDict[promptName] = bytearray(f.read())
                 f.close()
         promptName = "PROMPT_VOICE_NAME"
-        infile = voiceName+"/" + promptName+".c2"
+        infile = voiceName + "/" + promptName + "_" + atempo + ".c2"
         with open(infile,'rb') as f:
             promptsDict[promptName] = bytearray(f.read())
             f.close()
